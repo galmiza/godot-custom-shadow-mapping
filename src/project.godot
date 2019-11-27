@@ -1,0 +1,37 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[  ]
+_global_script_class_icons={
+
+}
+
+[application]
+
+config/name="Simple shadow mapping implementation"
+run/main_scene="res://Scene.tscn"
+config/icon="res://icon.png"
+
+[display]
+
+window/stretch/mode="viewport"
+window/stretch/aspect="expand"
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+quality/directional_shadow/size=1024
+quality/directional_shadow/size.mobile=1024
+quality/shadows/filter_mode=0
+quality/depth_prepass/enable=false
+environment/default_clear_color=Color( 0, 0, 0, 1 )

@@ -1,0 +1,47 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+render_mode skip_vertex_transform,blend_mix,depth_draw_opaque,cull_back,unshaded,shadows_disabled,ambient_light_disabled;
+
+varying highp vec4 vPositionGlobal; // view space
+varying highp vec3 vNormalGlobal; // view space
+
+uniform highp vec3 uLightDirection;
+uniform highp mat4 uScaleLookAtView;
+uniform sampler2D uTextureDepth;
+uniform highp float uBias;
+uniform highp float uFar;
+uniform highp float uNear;
+
+float unpack24(vec3 val) {
+  highp vec3 bit_shift = vec3(1.0/(256.0*256.0), 1.0f/256.0f, 1.0f);
+  return dot(val, bit_shift);
+}
+
+void vertex() {
+	highp vec4 vPositionLocal = vec4(VERTEX, 1.0); // local position
+	highp vec3 vNormalLocal = NORMAL; // local normal
+	vPositionGlobal = WORLD_MATRIX*vPositionLocal; // global position
+	vNormalGlobal = normalize(mat3(WORLD_MATRIX)*vNormalLocal); // global normal
+	highp vec4 vPositionViewSpace = INV_CAMERA_MATRIX*vPositionGlobal;
+	VERTEX = vPositionViewSpace.xyz; // view space (not clipped)
+}
+
+void fragment() {
+	highp vec4 p = uScaleLookAtView*vPositionGlobal; // position in light view space
+	highp vec2 uv = vec2(0.5)+p.xy/p.w;
+	highp float depth1 = unpack24(texture(uTextureDepth,uv).rgb); // depth from depth map
+	highp float depth2 = (-p.z/p.w-uNear)/(uFar-uNear); // to range [0,1]
+	highp float d = step(depth2+uBias, depth1); // 0 or 1
+	float diffuse = dot(vNormalGlobal,-uLightDirection);
+	ALBEDO = vec3(max(diffuse,0.0)*d);
+}"
+
+[resource]
+shader = SubResource( 1 )
+shader_param/uLightDirection = null
+shader_param/uScaleLookAtView = null
+shader_param/uBias = null
+shader_param/uFar = null
+shader_param/uNear = null
