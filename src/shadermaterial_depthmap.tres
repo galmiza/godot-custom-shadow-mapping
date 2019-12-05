@@ -28,8 +28,7 @@ void vertex() {
 }
 void fragment() {
 	highp float depth = (-vPositionViewSpace.z/vPositionViewSpace.w-uNear)/(uFar-uNear); // to range [0,1]
-	highp vec3 color = pack24(depth);
-	ALBEDO = color;
+	ALBEDO = pack24(depth);
 }"
 
 [resource]

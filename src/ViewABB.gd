@@ -7,29 +7,23 @@ class ViewABB:
 	var _max: Vector3
 	var _min: Vector3
 
-	func set_transform(t: Transform):
+	func set_transform(t: Transform) -> void:
 		transform = t
-	func reset():
+	func reset() -> void:
 		_max = Vector3(-1e20,-1e20,-1e20)
 		_min = Vector3( 1e20, 1e20, 1e20)
 
-	func add_point(node: Node, point: Vector3):
+	func add_point(node: Node, point: Vector3) -> void:
 		var a: Vector3 = node.get_transform().xform(point) # point in global space
 		var b: Vector3 = transform.xform_inv(a) # get point in the ViewABB space
 		_max.x = max(_max.x,b.x)
 		_max.y = max(_max.y,b.y)
 		_max.z = max(_max.z,b.z)
 		_min.x = min(_min.x,b.x)
-		_min.y = min(_min.x,b.y)
+		_min.y = min(_min.y,b.y)
 		_min.z = min(_min.z,b.z)
 	
-	func add_node(node: Node):
+	func add_node(node: Node) -> void:
 		var aabb: AABB = node.get_aabb()
-		add_point(node,Vector3(aabb.position.x,aabb.position.y,aabb.position.z))
-		add_point(node,Vector3(aabb.position.x,aabb.position.y,aabb.end.z))
-		add_point(node,Vector3(aabb.position.x,aabb.end.y,aabb.position.z))
-		add_point(node,Vector3(aabb.position.x,aabb.end.y,aabb.end.z))
-		add_point(node,Vector3(aabb.end.x,aabb.position.y,aabb.position.z))
-		add_point(node,Vector3(aabb.end.x,aabb.position.y,aabb.end.z))
-		add_point(node,Vector3(aabb.end.x,aabb.end.y,aabb.position.z))
-		add_point(node,Vector3(aabb.end.x,aabb.end.y,aabb.end.z))
+		for i in 8:
+			add_point(node,aabb.get_endpoint(i))
